@@ -43,6 +43,7 @@ class Network:
         self.inputs = []
         self.outputs = []
         self.nodes = []
+        self.topocache=[]
 
     def node_count(self):
         return len(self.nodes)
@@ -59,6 +60,7 @@ class Network:
             self.DAG.add_edge(source, dest, object=e)
         else:
             self.isrec = True
+        self.topocache=[]
 
     def add_node(self, is_input, is_output, bias=0.0):
         n = Neuron(bias, is_input, is_output)
@@ -69,6 +71,7 @@ class Network:
         if is_output:
             self.outputs.append(n)
         self.nodes.append(n)
+        self.topocache=[]
         return n
 
     def eval_node(self, node):
@@ -98,8 +101,9 @@ class Network:
                     i += 1
 
     def eval_asynch(self):
-        l = nx.topological_sort(self.DAG)
-        for n in l:
+        if not self.topocache:
+            self.topocache = nx.topological_sort(self.DAG)
+        for n in self.topocache:
             if not n.is_input:
                 n.current = self.eval_node(n)
 
