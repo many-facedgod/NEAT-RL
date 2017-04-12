@@ -1,9 +1,7 @@
 from __future__ import print_function
 import networkx as nx
 import numpy as np
-
-SIGMOID_POWER = 1
-
+from Config import *
 
 def sigmoid(x, z):
     return 1.0 / (1 + np.exp(-z * x))

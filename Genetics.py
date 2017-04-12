@@ -1,12 +1,7 @@
 import Network
 import numpy as np
-
-RATE = 0.2
-MIN = -5.0
-MAX = 5.0
-EXCESS_W = 1.0
-DISJOINT_W = 1.0
-WEIGHT_W = 3.0
+from Config import *
+import copy
 
 
 def rand():
@@ -119,23 +114,27 @@ class Chromosome:
                 self.add_edge(i.id, j.id, rand(), True)
 
     def mutate_toggle(self):
-        np.random.choice(self.edges.values()).toggle()
+        child=copy.deepcopy(self)
+        np.random.choice(child.edges.values()).toggle()
+        return child
 
     def mutate_add_node(self):
-        edge = np.random.choice(self.edges.values())
+        child=copy.deepcopy(self)
+        edge = np.random.choice(child.edges.values())
         edge.active = False
-        id = self.add_node(False, False, 0)
-        self.add_edge(edge.source, id, 1.0, True)
-        self.add_edge(id, edge.dest, edge.weight, True)
+        id = child.add_node(False, False, 0)
+        child.add_edge(edge.source, id, 1.0, True)
+        child.add_edge(id, edge.dest, edge.weight, True)
+        return child
 
     def mutate_add_edge(self):
-        src = np.random.choice(xrange(self.n_nodes))
-        outgoing = {x[0] for x in filter(lambda x: x[0] == src, self.edges.keys())}
-        candidates = list(set([x.id for x in self.outputs + self.hidden]) - outgoing)
-        if not candidates:
-            return
-        else:
-            self.add_edge(src, np.random.choice(candidates), rand(), True)
+        child=copy.deepcopy(self)
+        src = np.random.choice(xrange(child.n_nodes))
+        outgoing = {x[0] for x in filter(lambda x: x[0] == src, child.edges.keys())}
+        candidates = list(set([x.id for x in child.outputs + child.hidden]) - outgoing)
+        if candidates:
+            child.add_edge(src, np.random.choice(candidates), rand(), True)
+        return child
 
     def mutate_crossover(self, c2):
         child = Chromosome(self.n_inputs, self.n_outputs)
@@ -163,10 +162,12 @@ class Chromosome:
         return child
 
     def mutate_weights(self):
-        for id in xrange(self.n_inputs, self.n_nodes):
-            self.nodes[id].mutate_bias()
-        for edge in self.edges.values():
+        child=copy.deepcopy(self)
+        for id in xrange(child.n_inputs, child.n_nodes):
+            child.nodes[id].mutate_bias()
+        for edge in child.edges.values():
             edge.mutate_weight()
+        return child
 
     def phenotype(self):
         net = Network.Network()
@@ -178,6 +179,9 @@ class Chromosome:
 
     def set_fitness(self, fitness):
         self.fitness = fitness
+
+    def set_species(self, spid):
+        self.specis=spid
 
     def distance(self, c2):
         a, b = (self, c2) if len(self.edges) > len(c2.edges) else (c2, self)
@@ -207,18 +211,19 @@ class Chromosome:
 
 x=Chromosome(2, 2)
 x.make_full()
-x.mutate_add_edge()
-x.mutate_add_node()
-x.mutate_weights()
+#x.mutate_add_edge()
+#x.mutate_add_node()
+#x.mutate_weights()
 y=Chromosome(2,2)
 y.make_full()
-y.mutate_add_node()
-y.mutate_add_edge()
-y.mutate_toggle()
-z=y.mutate_crossover(x)
-u=z.mutate_crossover(x)
-g=x.phenotype()
-print(g.isrec)
+a=y.mutate_add_node()
+#y.mutate_add_node()
+#y.mutate_add_edge()
+#y.mutate_toggle()
+z=y.mutate_crossover(a)
+u=z.mutate_crossover(a)
+g=z.phenotype()
+print(y.distance(x))
 g.set_input([0.5, 1.0])
 g.eval_asynch()
 print(g.get_current_output())
