@@ -113,12 +113,13 @@ class Chromosome:
         self.create_input_output()
 
     def make_full(self):
+        self.create_input_output()
         for i in self.inputs:
             for j in self.outputs:
                 self.add_edge(i.id, j.id, rand(), True)
 
     def mutate_toggle(self):
-        np.random.choice(self.edges).toggle()
+        np.random.choice(self.edges.values()).toggle()
 
     def mutate_add_node(self):
         edge = np.random.choice(self.edges.values())
@@ -159,6 +160,7 @@ class Chromosome:
             else:
                 n = fitter.nodes[id]
                 child.add_node(n.is_input, n.is_output, n.bias)
+        return child
 
     def mutate_weights(self):
         for id in xrange(self.n_inputs, self.n_nodes):
@@ -168,9 +170,10 @@ class Chromosome:
 
     def phenotype(self):
         net = Network.Network()
-        nodes = [net.add_node(n.is_input, n.is_input, n.bias) for n in self.nodes]
+        nodes = [net.add_node(n.is_input, n.is_output, n.bias) for n in self.nodes]
         for edge in self.edges.values():
-            net.add_edge(edge.weight, nodes[edge.source], nodes[edge.dest])
+            if edge.active:
+                net.add_edge(edge.weight, nodes[edge.source], nodes[edge.dest])
         return net
 
     def set_fitness(self, fitness):
@@ -199,3 +202,23 @@ class Chromosome:
         if m > 0:
             dist += WEIGHT_W * (w / m)
         return dist
+
+
+
+x=Chromosome(2, 2)
+x.make_full()
+x.mutate_add_edge()
+x.mutate_add_node()
+x.mutate_weights()
+y=Chromosome(2,2)
+y.make_full()
+y.mutate_add_node()
+y.mutate_add_edge()
+y.mutate_toggle()
+z=y.mutate_crossover(x)
+u=z.mutate_crossover(x)
+g=x.phenotype()
+print(g.isrec)
+g.set_input([0.5, 1.0])
+g.eval_asynch()
+print(g.get_current_output())

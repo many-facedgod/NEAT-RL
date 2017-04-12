@@ -116,7 +116,7 @@ class Network:
 
 
 
-net=Network()
+"""net=Network()
 n1=net.add_node(True, False)
 n2=net.add_node(True, False)
 n3=net.add_node(False, False, 0.0)
@@ -145,4 +145,4 @@ net.eval_asynch()
 print(net.get_current_output())
 net.set_input([0.4, -1])
 net.eval_asynch()
-print(net.get_current_output())
+print(net.get_current_output())"""
