@@ -60,6 +60,9 @@ class Species:
     def getOffsprings(self):
         return self.offsprings
 
+	def getBestChromosome(self):
+		return self.chromosomes[self.bestChromosomeID]
+
     def reproduce(self, n_offsprings):
         for i in n_offsprings:
             x = np.random.random()
