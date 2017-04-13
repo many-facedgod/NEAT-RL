@@ -25,7 +25,7 @@ class Population:
 
     def evaluate(self, function):
         for chromosome in self.chromosomes:
-            chromosome.setFitness(function(chromosome.phenotype()))
+            chromosome.set_fitness(function(chromosome.phenotype()))
 
     def select(self, mode=SELECTION_MODE):
         self.chromosomes = []
@@ -68,3 +68,6 @@ class Population:
 
     def incrementGeneration(self):
         self.generation += 1
+
+	def getBestChromosome(self):
+		return max([s.getBestChromosome() for s in self.species_list])
