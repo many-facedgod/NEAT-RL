@@ -210,9 +210,9 @@ class Chromosome:
 
     def __lt__(self, other):
         return self.fitness<other.fitness
-
     def __gt__(self, other):
         return self.fitness>other.fitness
+
 
 x=Chromosome(2, 2)
 x.make_full()
