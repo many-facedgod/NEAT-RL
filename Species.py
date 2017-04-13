@@ -44,14 +44,18 @@ class Species:
         self.chromosomes.sort(reverse=True)
         self.chromosomes = self.chromosomes[0:int(np.ceil(REPRODUCTION_FRACTION * self.getSize()))]
         self.setRepresentativeID(np.random.randint(0, self.getSize()))
+        self.bestChromosomeID=0
 
     def rouletteWheelSelect(self):
         fitness = [chromosome.fitness for chromosome in self.chromosomes]
         total_fitness = np.sum(fitness)
         normalized_fitness = [x / total_fitness for x in fitness]
+        best=copy.deepcopy(max(self.chromosomes))
         self.chromosomes = np.random.choice(self.chromosomes, int(np.ceil(REPRODUCTION_FRACTION * self.getSize())),
-                                            p=normalized_fitness)
+                                            p=normalized_fitness).tolist()
         self.setRepresentativeID(np.random.randint(0, self.getSize()))
+        self.chromosomes.insert(0, best)
+        self.bestChromosomeID=0
 
     def getRandomChromosomeID(self):
         chromosomeID = np.random.randint(0, self.getSize())
@@ -60,11 +64,11 @@ class Species:
     def getOffsprings(self):
         return self.offsprings
 
-	def getBestChromosome(self):
-		return self.chromosomes[self.bestChromosomeID]
+    def getBestChromosome(self):
+        return self.chromosomes[self.bestChromosomeID]
 
     def reproduce(self, n_offsprings):
-        for i in n_offsprings:
+        for i in xrange(n_offsprings):
             x = np.random.random()
             if x <= PROB_MUTATE:
                 parent = self.chromosomes[self.getRandomChromosomeID()]
@@ -89,3 +93,4 @@ class Species:
                 child = parent1.mutate_crossover(parent2)
                 self.addOffspring(child)
         self.addOffspring(copy.deepcopy(self.chromosomes[self.bestChromosomeID]))
+        print("Fitness for species "+str(self.offsprings[-1].fitness))

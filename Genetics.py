@@ -21,6 +21,7 @@ class GeneN:
         self.bias = np.clip(self.bias, MIN, MAX)
 
 
+
 class GeneE:
     next_hm = 0
     history = {}
@@ -83,6 +84,7 @@ class Chromosome:
         id = self.n_nodes
         self.n_nodes += 1
         n = GeneN(id, is_input, is_output, bias)
+
         self.nodes.append(n)
         if is_input:
             self.inputs.append(n)
@@ -96,6 +98,7 @@ class Chromosome:
         id = (source, dest)
         self.n_edges += 1
         self.edges[id] = GeneE(source, dest, weight, active, HM)
+
         return id
 
     def make_sparse(self, prob=0.2):
@@ -131,7 +134,7 @@ class Chromosome:
     def mutate_add_edge(self):
         child=copy.deepcopy(self)
         src = np.random.choice(xrange(child.n_nodes))
-        outgoing = {x[0] for x in filter(lambda x: x[0] == src, child.edges.keys())}
+        outgoing = {x[1] for x in filter(lambda x: x[0] == src, child.edges.keys())}
         candidates = list(set([x.id for x in child.outputs + child.hidden]) - outgoing)
         if candidates:
             child.add_edge(src, np.random.choice(candidates), rand(), True)
@@ -182,7 +185,7 @@ class Chromosome:
         self.fitness = fitness
 
     def set_species(self, spid):
-        self.specis=spid
+        self.species=spid
 
     def distance(self, c2):
         a, b = (self, c2) if len(self.edges) > len(c2.edges) else (c2, self)
@@ -214,7 +217,7 @@ class Chromosome:
         return self.fitness>other.fitness
 
 
-x=Chromosome(2, 2)
+"""x=Chromosome(2, 2)
 x.make_full()
 #x.mutate_add_edge()
 #x.mutate_add_node()
@@ -231,4 +234,4 @@ g=z.phenotype()
 print(y.distance(x))
 g.set_input([0.5, 1.0])
 g.eval_asynch()
-print(g.get_current_output())
+print(g.get_current_output())"""

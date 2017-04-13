@@ -31,7 +31,7 @@ class Population:
         self.chromosomes = []
         for species in self.species_list:
             if mode == "Truncated":
-                species.truncateSelect()
+                species.truncatedSelect()
             elif mode == "RouletteWheel":
                 species.rouletteWheelSelect()
             for chromosome in species.chromosomes:
@@ -43,6 +43,7 @@ class Population:
                 species = Species(len(self.species_list))
                 species.add(chromosome)
                 self.species_list.append(species)
+
             else:
                 flag = 0
                 for species in self.species_list:
@@ -61,7 +62,7 @@ class Population:
         total_avg_species_fitness = np.sum(avg_species_fitness_list)
         self.chromosomes = []
         for species, avg_species_fitness in zip(self.species_list, avg_species_fitness_list):
-            n_offsprings = self.size * avg_species_fitness / total_avg_species_fitness
+            n_offsprings = int(self.size * avg_species_fitness / total_avg_species_fitness)
             species.reproduce(n_offsprings)
             self.chromosomes = self.chromosomes + species.getOffsprings()
         self.species_list = []
@@ -69,5 +70,5 @@ class Population:
     def incrementGeneration(self):
         self.generation += 1
 
-	def getBestChromosome(self):
-		return max([s.getBestChromosome() for s in self.species_list])
+    def getBestChromosome(self):
+        return max([s.getBestChromosome() for s in self.species_list])
