@@ -1,3 +1,4 @@
+from __future__ import print_function
 import Network
 import numpy as np
 from Config import *
@@ -207,7 +208,11 @@ class Chromosome:
             dist += WEIGHT_W * (w / m)
         return dist
 
+    def __lt__(self, other):
+        return self.fitness<other.fitness
 
+    def __gt__(self, other):
+        return self.fitness>other.fitness
 
 x=Chromosome(2, 2)
 x.make_full()
