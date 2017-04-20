@@ -51,7 +51,7 @@ class Population:
                 flag = 0
                 for species in self.species_list:
                     representative = species.getRepresentative()
-                    if chromosome.distance(representative) < DISTANCE_THRESHOLD:
+                    if chromosome.distance(representative) < self.distance_threshold:
                         species.add(chromosome)
                         flag = 1
                         break
