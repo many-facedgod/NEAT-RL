@@ -21,7 +21,6 @@ class GeneN:
         self.bias = np.clip(self.bias, MIN, MAX)
 
 
-
 class GeneE:
     next_hm = 0
     history = {}
@@ -118,12 +117,12 @@ class Chromosome:
                 self.add_edge(i.id, j.id, rand(), True)
 
     def mutate_toggle(self):
-        child=copy.deepcopy(self)
+        child = copy.deepcopy(self)
         np.random.choice(child.edges.values()).toggle()
         return child
 
     def mutate_add_node(self):
-        child=copy.deepcopy(self)
+        child = copy.deepcopy(self)
         edge = np.random.choice(child.edges.values())
         edge.active = False
         id = child.add_node(False, False, 0)
@@ -132,7 +131,7 @@ class Chromosome:
         return child
 
     def mutate_add_edge(self):
-        child=copy.deepcopy(self)
+        child = copy.deepcopy(self)
         src = np.random.choice(xrange(child.n_nodes))
         outgoing = {x[1] for x in filter(lambda x: x[0] == src, child.edges.keys())}
         candidates = list(set([x.id for x in child.outputs + child.hidden]) - outgoing)
@@ -166,11 +165,47 @@ class Chromosome:
         return child
 
     def mutate_weights(self):
-        child=copy.deepcopy(self)
+        child = copy.deepcopy(self)
         for id in xrange(child.n_inputs, child.n_nodes):
             child.nodes[id].mutate_bias()
         for edge in child.edges.values():
             edge.mutate_weight()
+        return child
+
+    def mutate_weights_severe(self):
+        child = copy.deepcopy(self)
+        e = child.edges.keys()
+        N = child.n_nodes - child.n_inputs + child.n_edges
+        end_part = N * 0.8
+        num = 0.0
+        severe = np.random.random() <= 0.5
+        for i in xrange(N):
+            if severe:
+                gauss_point = 0.3
+                cold_gauss_point = 0.1
+            elif (N >= 10.0) and (num > end_part):
+                gauss_point = 0.5
+                cold_gauss_point = 0.3
+            else:
+                gauss_point = 1.0 - MUTATION_RATE
+                if np.random.random() <= 0.5:
+                    cold_gauss_point = 0.9 - MUTATION_RATE
+                else:
+                    cold_gauss_point = 1.0 - MUTATION_RATE
+
+            rnd_num = rand() * MUTATION_POWER
+            rnd_choice = np.random.random()
+            if gauss_point < rnd_choice:
+                if i < child.n_edges:
+                    child.edges[e[i]].weight += rnd_num
+                else:
+                    child.nodes[i - child.n_edges + child.n_inputs].bias += rnd_num
+            elif cold_gauss_point < rnd_choice:
+                if i < child.n_edges:
+                    child.edges[e[i]].weight = rnd_num
+                else:
+                    child.nodes[i - child.n_edges + child.n_inputs].bias = rnd_num
+            num += 1.0
         return child
 
     def phenotype(self):
@@ -185,7 +220,7 @@ class Chromosome:
         self.fitness = fitness
 
     def set_species(self, spid):
-        self.species=spid
+        self.species = spid
 
     def distance(self, c2):
         a, b = (self, c2) if len(self.edges) > len(c2.edges) else (c2, self)
@@ -212,9 +247,10 @@ class Chromosome:
         return dist
 
     def __lt__(self, other):
-        return self.fitness<other.fitness
+        return self.fitness < other.fitness
+
     def __gt__(self, other):
-        return self.fitness>other.fitness
+        return self.fitness > other.fitness
 
 
 """x=Chromosome(2, 2)
