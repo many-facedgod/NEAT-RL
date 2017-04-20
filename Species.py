@@ -65,7 +65,7 @@ class Species:
         return self.offsprings
 
     def getBestChromosome(self):
-        return self.chromosomes[self.bestChromosomeID]
+        return max(self.chromosomes)
 
     def reproduce(self, n_offsprings):
         for i in xrange(n_offsprings):
@@ -95,7 +95,7 @@ class Species:
                 parent2 = self.chromosomes[self.getRandomChromosomeID()]
                 child = parent1.mutate_crossover(parent2)
                 self.addOffspring(child)
-        self.addOffspring(copy.deepcopy(self.chromosomes[self.bestChromosomeID]))
+        self.addOffspring(copy.deepcopy(max(self.chromosomes)))
         self.chromosomes=self.offsprings
         print("Fitness for species "+str(self.offsprings[-1].fitness))
 

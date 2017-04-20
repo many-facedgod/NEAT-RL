@@ -66,16 +66,15 @@ class Population:
         avg_species_fitness_list = [species.getAvgSpeciesFitness() for species in self.species_list]
         total_avg_species_fitness = np.sum(avg_species_fitness_list)
         delta_parameter = 0
-		population_size = len(self.chromosomes)
         self.chromosomes = []
         for species, avg_species_fitness in zip(self.species_list, avg_species_fitness_list):
-			if self.delta_coding_flag:
-				n_offsprings = population_size/2
-			else:
-            	n_offsprings = int(population_size * avg_species_fitness / total_avg_species_fitness)
+            if self.delta_coding_flag:
+                n_offsprings = self.size/2
+            else:
+                n_offsprings = int(self.size * avg_species_fitness / total_avg_species_fitness)
             species.reproduce(n_offsprings)
             self.chromosomes = self.chromosomes + species.getOffsprings()
-		self.delta_coding_flag = False
+        self.delta_coding_flag = False
         if DELTA_PARAMETER == "Best":
             delta_parameter = self.getBestChromosome().fitness
         elif DELTA_PARAMETER == "Avg":
@@ -85,13 +84,19 @@ class Population:
             self.n_deltagen = 0
         else:
             self.n_deltagen += 1
-        if self.n_deltagen == DELTA_GENERATIONS and len(self.species_list) > 1:
+        if self.n_deltagen == DELTA_GENERATIONS:
             self.species_list.sort(reverse=True)
-            self.chromosomes = []
-			self.delta_coding_flag = True
-            for species in self.species_list[:2]:
-                self.chromosomes += species.getOffsprings()
+            print("DELTA CODING")
+            if len(self.species_list) > 1:
+                self.chromosomes = []
+                self.delta_coding_flag = True
+                for species in self.species_list[:2]:
+                    print(species.getBestChromosome().fitness)
+                    self.chromosomes += species.getOffsprings()
+            self.n_deltagen = 0
         self.species_list = []
+        self.chromosomes.sort(reverse=True)
+        self.chromosomes=self.chromosomes[:MAX_SIZE]
 
     def incrementGeneration(self):
         self.generation += 1

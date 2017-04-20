@@ -32,6 +32,8 @@ def NEAT(fitness_fn, n_inputs, n_outputs, n_generations):
         print (generation, population.getBestChromosome().fitness)
         population.select()
         population.reproduce()
+        population.evaluate(fitness_fn)
+        print (generation, max(population.chromosomes).fitness)
         GeneE.clear_history()
         population.incrementGeneration()
 
