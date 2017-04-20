@@ -98,14 +98,14 @@ class Species:
         self.addOffspring(copy.deepcopy(self.chromosomes[self.bestChromosomeID]))
         print("Fitness for species "+str(self.offsprings[-1].fitness))
 
-	def __lt__(self, other):
-		if DELTA_PARAMETER == "Best":
-			return self.getBestChromosome().fitness < other.getBestChromosome().fitness
-		elif DELTA_PARAMETER == "Avg":
-			return self.getAvgSpeciesFitness() < other.getAvgSpeciesFitness()
+    def __lt__(self, other):
+	if DELTA_PARAMETER == "Best":
+	    return self.getBestChromosome().fitness < other.getBestChromosome().fitness
+	elif DELTA_PARAMETER == "Avg":
+	    return self.getAvgSpeciesFitness() < other.getAvgSpeciesFitness()
 
-	def __gt__(self, other):
-		if DELTA_PARAMETER == "Best":
-			return self.getBestChromosome().fitness > other.getBestChromosome().fitness
-		elif DELTA_PARAMETER == "Avg":
-			return self.getAvgSpeciesFitness() > other.getAvgSpeciesFitness()
+    def __gt__(self, other):
+	if DELTA_PARAMETER == "Best":
+	    return self.getBestChromosome().fitness > other.getBestChromosome().fitness
+	elif DELTA_PARAMETER == "Avg":
+	    return self.getAvgSpeciesFitness() > other.getAvgSpeciesFitness()
