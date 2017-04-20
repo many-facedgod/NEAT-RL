@@ -12,6 +12,7 @@ class Population:
         self.generation = 0
         self.bestperformance = 0
         self.n_deltagen = 0
+        self.distance_threshold = DISTANCE_THRESHOLD_DEFAULT
 
     def create(self, mode=POPULATION_INIT_MODE):
         for i in range(self.size):
@@ -58,6 +59,7 @@ class Population:
                     species = Species(len(self.species_list))
                     species.add(chromosome)
                     self.species_list.append(species)
+            self.distance_threshold = self.getDistanceThreshold()
 
     def reproduce(self):
         avg_species_fitness_list = [species.getAvgSpeciesFitness() for species in self.species_list]
@@ -85,6 +87,14 @@ class Population:
 
     def incrementGeneration(self):
         self.generation += 1
+        
+    def getDistanceThreshold(self):
+		if len(self.species_list) < DISTANCE_THRESHOLD_MIN_LIMIT:
+			return (1-DISTANCE_THRESHOLD_CHANGE)*self.distance_threshold
+		elif len(self.species_list) >= DISTANCE_THRESHOLD_MIN_LIMIT and len(self.chrosomes) <= DISTANCE_THRESHOLD_MAX_LIMIT:
+			return self.distance_threshold
+		else:
+			return self.distance_threshold*(1+DISTANCE_THRESHOLD_CHANGE)
         
     def getAverageFitness(self):
         return np.mean([c.fitness for c in self.chromosomes])
