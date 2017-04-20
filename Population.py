@@ -10,6 +10,8 @@ class Population:
         self.chromosomes = []
         self.species_list = []
         self.generation = 0
+        self.bestperformance = 0
+        self.n_deltagen = 0
 
     def create(self, mode=POPULATION_INIT_MODE):
         for i in range(self.size):
@@ -83,6 +85,9 @@ class Population:
 
     def incrementGeneration(self):
         self.generation += 1
+        
+    def getAverageFitness(self):
+        return np.mean([c.fitness for c in self.chromosomes])
 
     def getBestChromosome(self):
         return max([s.getBestChromosome() for s in self.species_list])
