@@ -13,6 +13,7 @@ class Population:
         self.bestperformance = 0
         self.n_deltagen = 0
         self.distance_threshold = DISTANCE_THRESHOLD_DEFAULT
+        self.delta_coding_flag = False
 
     def create(self, mode=POPULATION_INIT_MODE):
         for i in range(self.size):
@@ -65,11 +66,16 @@ class Population:
         avg_species_fitness_list = [species.getAvgSpeciesFitness() for species in self.species_list]
         total_avg_species_fitness = np.sum(avg_species_fitness_list)
         delta_parameter = 0
+		population_size = len(self.chromosomes)
         self.chromosomes = []
         for species, avg_species_fitness in zip(self.species_list, avg_species_fitness_list):
-            n_offsprings = int(self.size * avg_species_fitness / total_avg_species_fitness)
+			if self.delta_coding_flag:
+				n_offsprings = population_size/2
+			else:
+            	n_offsprings = int(population_size * avg_species_fitness / total_avg_species_fitness)
             species.reproduce(n_offsprings)
             self.chromosomes = self.chromosomes + species.getOffsprings()
+		self.delta_coding_flag = False
         if DELTA_PARAMETER == "Best":
             delta_parameter = self.getBestChromosome().fitness
         elif DELTA_PARAMETER == "Avg":
@@ -82,7 +88,7 @@ class Population:
         if self.n_deltagen == DELTA_GENERATIONS and len(self.species_list) > 1:
             self.species_list.sort(reverse=True)
             self.chromosomes = []
-            print("DELTACODING")
+			self.delta_coding_flag = True
             for species in self.species_list[:2]:
                 self.chromosomes += species.getOffsprings()
         self.species_list = []
