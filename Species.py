@@ -81,7 +81,10 @@ class Species:
                     self.addOffspring(child)
                 else:
                     toggle = np.random.choice(2, p=[PROB_TOGGLE, 1 - PROB_TOGGLE])
-                    child = parent.mutate_weights()
+                    if MUTATE_WEIGHT_OPTION == "Default":
+                        child = parent.mutate_weights()
+                    elif MUTATE_WEIGHT_OPTION == "Severe":
+                        child = parent.mutate_weights_severe()
                     if toggle == 0:
                         child_t = child.mutate_toggle()
                         self.addOffspring(child_t)
